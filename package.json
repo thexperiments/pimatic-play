@@ -1,0 +1,27 @@
+{ "name": "pimatic-play",
+  "description": "Plugin to play sounds in pimatic",
+  "author": "Lukas Reinhart <reinhart.lukas@gmail.com>",
+  "main": "play",
+  "files": [
+    "play.coffee",
+    "README.md",
+    "play-config-schema.coffee"
+  ],
+  "version": "0.8.0",
+  "homepage": "http://github.com/pimatic/pimatic",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pimatic/pimatic-pushover.git"
+  },
+  "configSchema": "play-config-schema.coffee",
+  "dependencies": {
+    "play": "0.5.0"
+  },
+  "peerDependencies": {
+    "pimatic": "0.8.*"
+  },
+  "engines": {
+    "node": ">0.8.x",
+    "npm": ">1.1.x"
+  }
+}
