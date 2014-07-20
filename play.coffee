@@ -27,12 +27,9 @@ module.exports = (env) ->
     init: (app, @framework, config) =>
       
       player = config.player
-      env.logger.debug "play: player= #{player}"
-
-      console.log Play.prototype
+      env.logger.debug "play: player=#{player}"
       playService = new Play()
-
-      #Play.setPlayer(player)
+      playService.usePlayer(player) if player?
       
       @framework.ruleManager.addActionProvider(new PlayActionProvider @framework, config)
   
