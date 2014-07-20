@@ -15,6 +15,9 @@ module.exports = (env) ->
   M = env.matcher
   # Require the [play](https://github.com/Marak/play.js) library
   Play = require 'play'
+  Promise.promisifyAll(Play.Play())
+
+  playService = null
 
   # ###Play class
   class PlayPlugin extends env.plugins.Plugin
@@ -24,6 +27,8 @@ module.exports = (env) ->
       
       player = config.player
       env.logger.debug "play: player= #{player}"
+
+      playService = Play.Play()
 
       #Play.setPlayer(player)
       
@@ -76,7 +81,8 @@ module.exports = (env) ->
           # just return a promise fulfilled with a description about what we would do.
           return __("would play file \"%s\"", file)
         else
-          return Promise.promisify(Play.sound) file
+          promisedPlay = Promise.promisify(playService.sound, playService)
+          return promisedPlay file
       )
 
   module.exports.PlayActionHandler = PlayActionHandler

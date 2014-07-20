@@ -8,14 +8,14 @@
     "play-config-schema.coffee"
   ],
   "version": "0.8.0",
-  "homepage": "http://github.com/pimatic/pimatic",
+  "homepage": "http://github.com/thexperiments/pimatic-play",
   "repository": {
     "type": "git",
-    "url": "git://github.com/pimatic/pimatic-pushover.git"
+    "url": "git://github.com/thexperiments/pimatic-play.git"
   },
   "configSchema": "play-config-schema.coffee",
   "dependencies": {
-    "play": "0.5.0"
+    "play": "git+https://github.com/Marak/play.js.git"
   },
   "peerDependencies": {
     "pimatic": "0.8.*"

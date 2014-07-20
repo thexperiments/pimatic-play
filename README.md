@@ -2,6 +2,13 @@ pimatic-play
 =======================
 
 A plugin for playing sounds in pimatic.
+Requires a suitable player installed on your machine:
+
+afplay (osx available by default)
+mplayer (best for raspberry)
+mpg123
+mpg321
+play
 
 
 Configuration
