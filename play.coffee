@@ -9,13 +9,14 @@
 # and classes. See the [startup.coffee](http://sweetpi.de/pimatic/docs/startup.html) for details.
 module.exports = (env) ->
 
+  path = require 'path'
   Promise = env.require 'bluebird'
   assert = env.require 'cassert'
   util = env.require 'util'
   M = env.matcher
   # Require the [play](https://github.com/Marak/play.js) library
-  Play = require 'play'
-  Promise.promisifyAll(Play.Play())
+  Play = require('play').Play
+  Promise.promisifyAll(Play.prototype)
 
   playService = null
 
@@ -26,11 +27,9 @@ module.exports = (env) ->
     init: (app, @framework, config) =>
       
       player = config.player
-      env.logger.debug "play: player= #{player}"
-
-      playService = Play.Play()
-
-      #Play.setPlayer(player)
+      env.logger.debug "play: player=#{player}"
+      playService = new Play()
+      playService.usePlayer(player) if player?
       
       @framework.ruleManager.addActionProvider(new PlayActionProvider @framework, config)
   
@@ -81,8 +80,10 @@ module.exports = (env) ->
           # just return a promise fulfilled with a description about what we would do.
           return __("would play file \"%s\"", file)
         else
-          promisedPlay = Promise.promisify(playService.sound, playService)
-          return promisedPlay file
+          fullPath = path.resolve @framework.maindir, '../..', file
+          return playService.soundAsync(fullPath).then( =>
+            return __("played \"%s\"", file)
+          )
       )
 
   module.exports.PlayActionHandler = PlayActionHandler
