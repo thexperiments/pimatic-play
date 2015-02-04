@@ -9,6 +9,7 @@
 # and classes. See the [startup.coffee](http://sweetpi.de/pimatic/docs/startup.html) for details.
 module.exports = (env) ->
 
+  fs = require 'fs'
   path = require 'path'
   Promise = env.require 'bluebird'
   assert = env.require 'cassert'
@@ -73,18 +74,34 @@ module.exports = (env) ->
     constructor: (@framework, @fileTokens) ->
 
     executeAction: (simulate, context) ->
-      Promise.all( [
-        @framework.variableManager.evaluateStringExpression(@fileTokens)
-      ]).then( ([file]) =>
-        if simulate
-          # just return a promise fulfilled with a description about what we would do.
-          return __("would play file \"%s\"", file)
-        else
-          fullPath = path.resolve @framework.maindir, '../..', file
-          return playService.soundAsync(fullPath).then( =>
-            return __("played \"%s\"", file)
-          )
-      )
+
+      # get path of file to be played
+      fullpath = Promise.all( [ @framework.variableManager.evaluateStringExpression(@fileTokens) ])
+        # get full path
+        .then( ([file]) => return path.resolve @framework.maindir, '../..', file)
+      
+      fullpath.then( (file) => 
+        # check if file exists 
+        fs.statAsync(file))
+        .then( (filestats) => 
+          if not filestats.isFile()
+            throw new Error("path is not a file (but e.g. a folder"))
+        # play file
+        .then( => 
+          fp=fullpath.value() 
+          if simulate
+             env.logger.info __("would play file \"%s\"", fp)
+             # just return a promise fulfilled with a description about what we would do.
+             return __("would play file \"%s\"", fp)
+          else
+            env.logger.info __("played \"%s\"", fp)
+            return playService.soundAsync(fp).then( => return __("played \"%s\"", fp)))
+        # log error if file does not exist
+        .catch( =>
+          fp=fullpath.value() 
+          env.logger.error __("could not play file: \"%s\"", fp)
+          return __("could not play file: \"%s\"", fp))
+        
 
   module.exports.PlayActionHandler = PlayActionHandler
 
